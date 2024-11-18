@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Route Planner</title>
+    <!-- External Dependencies -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <!-- Internal Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+
+<body>
+    <main class='container'>
+        <table id="bpTable">
+            <thead>
+                <tr>
+                    <th class='rank'>Rank</th>
+                    <th>BP Number</th>
+                    <th>Address</th>
+                    <th>Description</th>
+                    <th class='action'></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        <div class="button-container">
+            <button class="add-button" id="addRowButton">+</button>
+            <button id="optimizeRouteButton" class="optimize-button">
+              Optimize Route Order
+            </button>
+        </div>
+        <div id="link" style="height: 50px;"></div>
+        <div id="map" style="height: 600px; width: 100%;"></div>
+        <div class="bulk-import-section">
+            <textarea 
+                id="bpImportArea" 
+                class="bp-import-textarea" 
+                placeholder="Paste text containing BP numbers (format: BP202#-#####). The system will automatically extract valid BP numbers."
+            ></textarea>
+            <button id="importBPButton" class="import-button">Import BP Numbers</button>
+        </div>
+    </main>
+
+    <!-- Config must be loaded first -->
+    <script src="js/config.js"></script>
+
+    <!-- Utilities -->
+    <script src="js/utils/urlUtils.js"></script>
+    <script src="js/utils/bpValidator.js"></script>
+    <script src="js/utils/apiService.js"></script>
+    <script src="js/utils/osrmOptimizer.js"></script>
+    <script src="js/utils/routeOptimizer.js"></script>
+    <!-- Managers -->
+    <script src="js/managers/StateManager.js"></script>
+    <script src="js/managers/MapManager.js"></script>
+    <script src="js/managers/TableManager.js"></script>
+
+    <!-- Components -->
+    <script src="js/components/BPImporter.js"></script>
+    <script src="js/components/RouteLink.js"></script>
+
+    <!-- Main initialization -->
+    <script src="js/main.js"></script>
+</body>
+</html>

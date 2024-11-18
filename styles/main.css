@@ -1,0 +1,150 @@
+:root {
+    --primary-color: #4CAF50;
+    --danger-color: #f44336;
+    --map-marker-color: #4a80f5;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#map {
+    height: 500px !important;
+    width: 100%;
+    margin-top: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+th.action { width: 40px; }
+th.rank { width: 100px; }
+
+.drag-handle {
+    cursor: move;
+    user-select: none;
+}
+
+.add-button {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.dragging { opacity: 0.5; }
+
+.delete-button {
+    background-color: transparent;
+    color: var(--danger-color);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    margin-left: 10px;
+}
+
+.rank-input {
+    width: 6ch;
+    text-align: center;
+}
+
+.custom-number-icon {
+    background-color: var(--map-marker-color);
+    border: 2px solid white;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    line-height: 30px;
+    width: 30px !important;
+    height: 30px !important;
+    display: block;
+}
+.bulk-import-section {
+margin-top: 20px;
+padding: 20px;
+border-top: 1px solid #ccc;
+}
+
+.bp-import-textarea {
+width: 100%;
+min-height: 50px;
+margin: 10px 0;
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 4px;
+font-family: monospace;
+}
+
+.import-button {
+background-color: var(--primary-color);
+color: white;
+padding: 8px 16px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.import-button:hover {
+opacity: 0.9;
+}
+
+.optimize-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+.optimize-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Add loading state */
+.optimize-button.loading {
+    position: relative;
+    color: transparent;
+}
+
+.optimize-button.loading::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
