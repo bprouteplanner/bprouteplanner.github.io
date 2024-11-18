@@ -100,7 +100,8 @@ class StateManager {
                             address: "",
                             description: "",
                             lat: null,
-                            lon: null
+                            lon: null,
+                            permittype: null,
                         }));
                         
                         // Fetch BP details for each item
@@ -121,7 +122,8 @@ class StateManager {
                     address: "",
                     description: "",
                     lat: null,
-                    lon: null
+                    lon: null,
+                    permittype: null,
                 }];
             }
         
@@ -171,22 +173,36 @@ class StateManager {
                 }
         
                 const response = await fetch(
-                    `${CONFIG.API_URL}?$select=originaladdress,description,latitude,longitude&$where=permitnum=%27${bpNumber}%27`
+                    `${CONFIG.API_URL}?$select=originaladdress,description,latitude,longitude,permittype&$where=permitnum=%27${bpNumber}%27`
                 );
                 const data = await response.json();
         
                 if (Array.isArray(data) && data.length > 0) {
-                    const {originaladdress, description, latitude, longitude} = data[0];
+                    const {originaladdress, description, latitude, longitude, permittype} = data[0];
                     if (latitude && longitude && originaladdress && description) {
                         return {
                             address: `<a target="_blank" href="${CONFIG.GOOGLE_MAP_URL}${latitude},${longitude}">${originaladdress}</a>`,
                             description,
                             lat: latitude,
-                            lon: longitude
+                            lon: longitude,
+                            permittype: this.doAbbreviation(permittype),
                         };
                     }
                 }
                 return null;
+            }
+
+            doAbbreviation(text) {
+                switch(text) {
+                    case "Residential Improvement Project":
+                        return "RIP";
+                    case "Single Construction Permit":
+                        return "SCP";
+                    case "Commercial / Multi Family Project":
+                        return "CMF";
+                    default:
+                        return text; // or return null/undefined if you prefer
+                }
             }
         
             addRow() {
@@ -197,7 +213,8 @@ class StateManager {
                     address: "",
                     description: "",
                     lat: null,
-                    lon: null
+                    lon: null,
+                    permittype: null,
                 });
                 this.updateURL();
             }

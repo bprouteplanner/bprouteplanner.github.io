@@ -18,7 +18,8 @@ class BPImporter {
     }
 
     extractBPNumbers(text) {
-        const bpRegex = /BP202\d-\d{5}/g;
+        //const bpRegex = /[A-Za-z]{2}\d{4}-\d{5}/g;
+        const bpRegex = CONFIG.BP_IMPORT_FORMAT;
         return [...new Set(text.match(bpRegex) || [])];
     }
 

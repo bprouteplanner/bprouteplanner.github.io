@@ -40,6 +40,7 @@ class TableManager {
         sortedList.forEach((row, index) => {
             const tr = document.createElement('tr');
             tr.draggable = true;
+            tr.className = `${row.permittype}-row`;
             tr.innerHTML = `
                 <td>
                     <span class="drag-handle">☰</span>
@@ -47,7 +48,7 @@ class TableManager {
                            onchange="app.tableManager.updateRank(${index}, this.value)">
                 </td>
                 <td>
-                    <input type="text" value="${row.bpNumber}" 
+                    <input class="bp-input" type="text" value="${row.bpNumber}" 
                            onchange="app.tableManager.updateBPNumber(${index}, this.value)">
                 </td>
                 <td>${row.address || ''}</td>

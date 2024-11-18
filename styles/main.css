@@ -62,6 +62,19 @@ th.rank { width: 100px; }
 .rank-input {
     width: 6ch;
     text-align: center;
+    background-color: #ffffff20;
+    border-color: #00000020;
+    border-style:dashed;
+    border-radius: 4px;
+}
+
+.bp-input {
+    width: 14ch;
+    text-align: center;
+    background-color: #ffffff20;
+    border-color: #00000020;
+    border-style:dashed;
+    border-radius: 4px;
 }
 
 .custom-number-icon {
@@ -147,4 +160,16 @@ opacity: 0.9;
 @keyframes spin {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.CMF-row {
+    background-color: #82e4ff80;
+}
+
+.RIP-row {
+    background-color: #ea82ff80;
+}
+
+.SCP-row {
+    background-color: #ffaa8280;
 }
