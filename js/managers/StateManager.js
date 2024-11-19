@@ -86,34 +86,36 @@ class StateManager {
     }
     
         
-            loadFromURL() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const encodedString = urlParams.get('data');
+    loadFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const bpNumberString = urlParams.get('bpnumbers');
+        
+        if (bpNumberString) {
+            try {
+                // Split the comma-separated string into an array
+                const bpNumbers = bpNumberString.split(',');
                 
-                if (encodedString) {
-                    try {
-                        // Only load rank and bpNumber from URL
-                        const data = JSON.parse(decodeURIComponent(encodedString));
-                        this.callList = data.map(item => ({
-                            rank: item.rank,
-                            bpNumber: item.bpNumber,
-                            address: "",
-                            description: "",
-                            lat: null,
-                            lon: null,
-                            permittype: null,
-                        }));
-                        
-                        // Fetch BP details for each item
-                        this.refreshAllBPData();
-                    } catch (error) {
-                        console.error('Error parsing URL data:', error);
-                        this.initializeEmptyList();
-                    }
-                } else {
-                    this.initializeEmptyList();
-                }
+                // Create call list with rank based on position
+                this.callList = bpNumbers.map((bpNumber, index) => ({
+                    rank: index + 1,
+                    bpNumber: bpNumber,
+                    address: "",
+                    description: "",
+                    lat: null,
+                    lon: null,
+                    permittype: null,
+                }));
+                
+                // Fetch BP details for each item
+                this.refreshAllBPData();
+            } catch (error) {
+                console.error('Error parsing URL data:', error);
+                this.initializeEmptyList();
             }
+        } else {
+            this.initializeEmptyList();
+        }
+    }
         
             initializeEmptyList() {
                 this.callList = [{
@@ -129,14 +131,9 @@ class StateManager {
         
         
             updateURL() {
-                // Only store essential data in URL
-                const essentialData = this.callList.map(item => ({
-                    rank: item.rank,
-                    bpNumber: item.bpNumber
-                }));
-                const jsonString = JSON.stringify(essentialData);
-                const encodedString = encodeURIComponent(jsonString);
-                const newURL = `${window.location.origin}${window.location.pathname}?data=${encodedString}`;
+                // Join BP numbers with commas
+                const bpNumberString = this.callList.map(item => item.bpNumber).join(',');
+                const newURL = `${window.location.origin}${window.location.pathname}?bpnumbers=${bpNumberString}`;
                 window.history.pushState({ path: newURL }, '', newURL);
             }
         
@@ -201,7 +198,7 @@ class StateManager {
                     case "Commercial / Multi Family Project":
                         return "CMF";
                     default:
-                        return text; // or return null/undefined if you prefer
+                        return text;
                 }
             }
         
