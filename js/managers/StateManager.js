@@ -176,10 +176,11 @@ class StateManager {
         
                 if (Array.isArray(data) && data.length > 0) {
                     const {originaladdress, description, latitude, longitude, permittype} = data[0];
-                    if (latitude && longitude && originaladdress && description) {
+                    
+                    if (latitude && longitude && originaladdress) {
                         return {
                             address: `<a target="_blank" href="${CONFIG.GOOGLE_MAP_URL}${latitude},${longitude}">${originaladdress}</a>`,
-                            description,
+                            description: description || permittype, // description empty on demo permits 
                             lat: latitude,
                             lon: longitude,
                             permittype: this.doAbbreviation(permittype),
@@ -188,6 +189,7 @@ class StateManager {
                 }
                 return null;
             }
+
 
             doAbbreviation(text) {
                 switch(text) {
