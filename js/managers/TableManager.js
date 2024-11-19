@@ -44,12 +44,10 @@ class TableManager {
             tr.innerHTML = `
                 <td>
                     <span class="drag-handle">☰</span>
-                    <input class="rank-input" type="number" value="${row.rank}" 
-                           onchange="app.tableManager.updateRank(${index}, this.value)">
+                    <input class="rank-input" type="number" value="${row.rank}">
                 </td>
                 <td>
-                    <input class="bp-input" type="text" value="${row.bpNumber}" 
-                           onchange="app.tableManager.updateBPNumber(${index}, this.value)">
+                    <input class="bp-input" type="text" value="${row.bpNumber}">
                 </td>
                 <td>${row.address || ''}</td>
                 <td>${row.description || ''}</td>
@@ -57,13 +55,29 @@ class TableManager {
                     <button class="delete-button" type="button" data-index="${index}">✖</button>
                 </td>
             `;
+            // Add event listeners
+            const BPNumberInput = tr.querySelector('.bp-input');
+            if (BPNumberInput) {
+                BPNumberInput.addEventListener('input', (e) => {
+                  if (CONFIG.BP_FORMAT.test(e.target.value)) {
+                        this.updateBPNumber(index, e.target.value);
+                    } 
+                });
+            }
 
-            // Add delete button event listener
+            const rankInput = tr.querySelector('.rank-input');
+            rankInput.addEventListener('change', (e) => {
+                console.log(index, e.target.value);
+                this.updateRank(index, e.target.value);
+            });
+  
             const deleteButton = tr.querySelector('.delete-button');
+            if (deleteButton) {
             deleteButton.addEventListener('click', (e) => {
                 const idx = parseInt(e.target.dataset.index);
                 this.deleteRow(idx);
             });
+        }
 
             this.attachDragListeners(tr);
             tableBody.appendChild(tr);
@@ -181,29 +195,41 @@ class TableManager {
     updateRank(index, newRank) {
         const updatedRank = parseInt(newRank);
         if (isNaN(updatedRank) || updatedRank < 1) return;
-
-        // Find the item to update
+        
+        // Get current item and its old rank
         const itemToUpdate = this.state.callList[index];
         if (!itemToUpdate) return;
-
-        // Update the rank
-        itemToUpdate.rank = updatedRank;
-
-        // Sort and reorder all ranks
-        this.state.callList.sort((a, b) => a.rank - b.rank);
+        const oldRank = itemToUpdate.rank;
         
-        // Normalize ranks to ensure they're sequential
-        this.state.callList.forEach((item, idx) => {
+        // Ensure rank is within valid range
+        const maxRank = this.state.callList.length;
+        const validRank = Math.min(Math.max(updatedRank, 1), maxRank);
+        
+        // Create new array with updated positions
+        const newList = [...this.state.callList];
+        
+        // Remove item from its current position
+        newList.splice(index, 1);
+        
+        // Insert item at new position (rank - 1 because array is 0-based)
+        newList.splice(validRank - 1, 0, itemToUpdate);
+        
+        // Update all ranks to match new positions
+        newList.forEach((item, idx) => {
             item.rank = idx + 1;
         });
-
+        
+        // Update the state
+        this.state.callList = newList;
+        
         // Update URL and render
         this.state.updateURL();
         this.renderTable();
     }
 
-    updateBPNumber(index, newBPNumber) {
-        this.state.updateBPNumber(index, newBPNumber);
+    async updateBPNumber(index, newBPNumber) {
+        await this.state.updateBPNumber(index, newBPNumber);
+        this.renderTable();
     }
 
     updateRouteLink() {
@@ -223,5 +249,22 @@ class TableManager {
         const url = `${CONFIG.GOOGLE_ROUTE_URL}&origin=Current+Location&destination=${lastRow.lat},${lastRow.lon}${waypoints ? `&waypoints=${waypoints}` : ''}&travelmode=driving`;
 
         document.getElementById('link').innerHTML = `<a target="_blank" href="${encodeURI(url)}">Google Maps Route Link</a>`;
+    }
+
+    handleRankKeydown(index, event) {
+        if (event.key === 'ArrowUp') {
+            event.preventDefault(); // Prevent default increment
+            if (index > 0) { // Can't move up if already at top
+                this.updateRank(index, index + 1);
+            }
+            return false;
+        } else if (event.key === 'ArrowDown') {
+            event.preventDefault(); // Prevent default decrement
+            if (index < this.callList.length - 1) {
+                updateRank(index, index - 1);
+            }
+            return false;
+        }
+        return true;
     }
 }
