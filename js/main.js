@@ -3,6 +3,7 @@ class App {
         this.state = new StateManager();
         this.mapManager = new MapManager(this.state);
         this.tableManager = new TableManager(this.state, this.mapManager);
+        this.themeManager = new ThemeManager();
         
         this.state.registerEventHandlers({
             onStateUpdate: () => this.tableManager.renderTable()
