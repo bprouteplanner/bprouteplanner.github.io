@@ -3,30 +3,24 @@ class RouteOptimizer {
         if (locations.length <= 2) return locations;
 
         try {
-            // Keep first location (rank 1) as start point
+            // Start with nearest neighbor solution
             const start = locations[0];
             const remainingPoints = locations.slice(1);
-            const optimizedRoute = [start];
+            let route = [start];
             
+            // Build initial route using nearest neighbor
             let currentPoint = start;
-            
-            // Find nearest neighbor for each point
             while (remainingPoints.length > 0) {
                 let nearestIndex = 0;
                 let shortestDistance = this.calculateDistance(
-                    currentPoint.lat, 
-                    currentPoint.lon,
-                    remainingPoints[0].lat,
-                    remainingPoints[0].lon
+                    currentPoint.lat, currentPoint.lon,
+                    remainingPoints[0].lat, remainingPoints[0].lon
                 );
 
-                // Find nearest point
                 for (let i = 1; i < remainingPoints.length; i++) {
                     const distance = this.calculateDistance(
-                        currentPoint.lat,
-                        currentPoint.lon,
-                        remainingPoints[i].lat,
-                        remainingPoints[i].lon
+                        currentPoint.lat, currentPoint.lon,
+                        remainingPoints[i].lat, remainingPoints[i].lon
                     );
                     if (distance < shortestDistance) {
                         shortestDistance = distance;
@@ -34,13 +28,56 @@ class RouteOptimizer {
                     }
                 }
 
-                // Add nearest point to route
                 currentPoint = remainingPoints[nearestIndex];
-                optimizedRoute.push(currentPoint);
+                route.push(currentPoint);
                 remainingPoints.splice(nearestIndex, 1);
             }
 
-            return optimizedRoute;
+            // Apply 2-opt improvement
+            let improvement = true;
+            let iterations = 0;
+            const maxIterations = 100; // Prevent infinite loops
+
+            while (improvement && iterations < maxIterations) {
+                improvement = false;
+                iterations++;
+
+                // Try all possible segment swaps
+                for (let i = 1; i < route.length - 2; i++) {
+                    for (let j = i + 1; j < route.length - 1; j++) {
+                        const oldDistance = 
+                            this.calculateDistance(
+                                route[i-1].lat, route[i-1].lon,
+                                route[i].lat, route[i].lon
+                            ) +
+                            this.calculateDistance(
+                                route[j].lat, route[j].lon,
+                                route[j+1].lat, route[j+1].lon
+                            );
+
+                        const newDistance = 
+                            this.calculateDistance(
+                                route[i-1].lat, route[i-1].lon,
+                                route[j].lat, route[j].lon
+                            ) +
+                            this.calculateDistance(
+                                route[i].lat, route[i].lon,
+                                route[j+1].lat, route[j+1].lon
+                            );
+
+                        // If new route would be shorter, swap segments
+                        if (newDistance < oldDistance) {
+                            // Reverse the segment between i and j
+                            const segment = route.slice(i, j + 1);
+                            segment.reverse();
+                            route = [...route.slice(0, i), ...segment, ...route.slice(j + 1)];
+                            improvement = true;
+                        }
+                    }
+                }
+            }
+
+            return route;
 
         } catch (error) {
             console.error('Route optimization failed:', error);
